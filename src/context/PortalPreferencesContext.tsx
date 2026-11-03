@@ -1,13 +1,8 @@
-import { createContext, useContext, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
-
-interface PortalPreferencesContextValue {
-  compactList: boolean;
-  setCompactList: (next: boolean) => void;
-}
+import { PortalPreferencesContext } from './portalPreferences';
 
 const STORAGE_KEY = 'portal_compact_list';
-const PortalPreferencesContext = createContext<PortalPreferencesContextValue | undefined>(undefined);
 
 function readCompactListFromStorage(): boolean {
   try {
@@ -46,12 +41,4 @@ export function PortalPreferencesProvider({ children }: { children: ReactNode })
       {children}
     </PortalPreferencesContext.Provider>
   );
-}
-
-export function usePortalPreferences() {
-  const context = useContext(PortalPreferencesContext);
-  if (!context) {
-    throw new Error('usePortalPreferences must be used within PortalPreferencesProvider');
-  }
-  return context;
 }

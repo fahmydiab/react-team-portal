@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { fetchProjects } from '../api/mockApi';
 import { withLoading } from '../hoc/withPortalGuards';
-import { usePortalPreferences } from '../context/PortalPreferencesContext';
+import { usePortalPreferences } from '../context/portalPreferences';
 import type { Project, ProjectStatus } from '../types';
 
 function isProjectStatus(value: string): value is ProjectStatus {
@@ -114,31 +114,39 @@ export function ProjectList() {
   const [data, setData] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
 
-  const loadPortalProjects = useCallback(() => {
-    setLoading(true);
-    setErrorMsg(null);
+  useEffect(() => {
+    let ignore = false;
 
     fetchProjects()
       .then((res) => {
+        if (ignore) return;
         setData(res);
         setLoading(false);
       })
       .catch((err: Error) => {
+        if (ignore) return;
         setErrorMsg(err.message || 'An unexpected runtime connection loss was sustained.');
         setLoading(false);
       });
-  }, []);
 
-  useEffect(() => {
-    loadPortalProjects();
-  }, [loadPortalProjects]);
+    return () => {
+      ignore = true;
+    };
+  }, [reloadKey]);
+
+  const retry = () => {
+    setLoading(true);
+    setErrorMsg(null);
+    setReloadKey((key) => key + 1);
+  };
 
   if (errorMsg) {
     return (
       <div className="error-banner" style={{ padding: '1rem' }}>
         <p>{errorMsg}</p>
-        <button className="btn" onClick={loadPortalProjects}>Retry</button>
+        <button className="btn" onClick={retry}>Retry</button>
       </div>
     );
   }

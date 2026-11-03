@@ -1,13 +1,7 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { useState } from 'react';
 import type { User } from '../types';
+import { AuthContext } from './auth';
 
-interface AuthContextType {
-  user: User | null;
-  setUserSession: (user: User) => void;
-  logout: () => void;
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const STORAGE_KEY = 'portal_session_v3';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -54,12 +48,4 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       {children}
     </AuthContext.Provider>
   );
-}
-
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be executed within an enclosed AuthProvider root');
-  }
-  return context;
 }

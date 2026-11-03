@@ -1,4 +1,4 @@
-import { usePortalPreferences } from '../context/PortalPreferencesContext';
+import { usePortalPreferences } from '../context/portalPreferences';
 
 export function AdminSettings() {
   const { compactList, setCompactList } = usePortalPreferences();

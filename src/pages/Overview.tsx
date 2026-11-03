@@ -12,9 +12,6 @@ export function Overview() {
   useEffect(() => {
     let ignore = false;
 
-    setLoading(true);
-    setErrorMessage(null);
-
     fetchProjects()
       .then((projects) => {
         if (ignore) {
